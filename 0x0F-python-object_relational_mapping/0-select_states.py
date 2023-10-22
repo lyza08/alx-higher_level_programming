@@ -1,45 +1,42 @@
 #!/usr/bin/python3
+"""Module that lists all states from mySQL database"""
+import sys
 import MySQLdb
 
-def main(mysql_username, mysql_password, database_name):
-  """Lists all states from the database `hbtn_0e_0_usa`.
+def list_states (username, password, database):
+    """lists all states from the database hbtn_0e_0_usa.
+    Ags:
+        username: mysql username
+        password: mysql password
+        database: mysql database
+    """
+    # Connect to the MySQL server
+    db = MySQLdb.connect(host='localhost',\
+            port=3306,\
+            user=username,\
+            passwd=password,\
+            db=database)
+    cursor = db.cursor()
 
-  Args:
-    mysql_username: The username for the MySQL server.
-    mysql_password: The password for the MySQL server.
-    database_name: The name of the database to connect to.
-  """
+    # Execute the SQL query to fetch all states
+    cursor.execute("SELECT * FROM states ORDER BY id ASC")
 
-  # Connect to the MySQL server.
-  db = MySQLdb.connect(
-      host='localhost',
-      port=3306,
-      user=mysql_username,
-      passwd=mysql_password,
-      db=database_name)
+    # Fetch all the rows from the query result
+    rows = cursor.fetchall()
 
-  # Create a cursor object.
-  cursor = db.cursor()
+    # Print the results
+    for row in rows:
+        print(row)
 
-  # Execute the SQL query to list all states.
-  cursor.execute('SELECT * FROM states ORDER BY id ASC')
+    # Close the database connection
+    db.close()
 
-  # Get the results of the query.
-  results = cursor.fetchall()
-
-  # Close the cursor and database connection.
-  cursor.close()
-  db.close()
-
-  # Print the results.
-  for state in results:
-    print(state[1])
-
+# Example usage
 if __name__ == '__main__':
-  # Get the MySQL username, password, and database name from the command line.
-  mysql_username = input('Enter the MySQL username: ')
-  mysql_password = input('Enter the MySQL password: ')
-  database_name = input('Enter the database name: ')
 
-  # List all states from the database.
-  main(mysql_username, mysql_password, database_name)
+    username = sys.argv[1]
+    password = sys.argv[2]
+    database = sys.argv[3]
+
+    list_states(username, password, database)
+
